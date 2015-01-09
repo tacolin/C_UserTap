@@ -136,8 +136,8 @@ int main(int argc, char* argv[])
 
     while (_running)
     {
-        timeout.tv_sec = 0;
-        timeout.tv_usec = 50000;
+        timeout.tv_sec = 1;
+        timeout.tv_usec = 0;
 
         FD_ZERO(&readset);
         FD_SET(tapfd, &readset);
@@ -190,24 +190,7 @@ _END:
         close(tapfd);
     }
 
-    if (ipaddr)
-    {
-        free(ipaddr);
-    }
+    FREE_ALL(ipaddr, netmask, dstip, ifname);
 
-    if (netmask)
-    {
-        free(netmask);
-    }
-
-    if (dstip)
-    {
-        free(dstip);
-    }
-
-    if (ifname)
-    {
-        free(ifname);
-    }
     return 0;
 }

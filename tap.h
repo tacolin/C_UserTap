@@ -33,6 +33,19 @@
     }\
 }
 
+#define FN_APPLY_ALL(type, fn, ...) \
+{\
+    void* _stopPoint = (int[]){0};\
+    void** _listForApplyAll = (type[]){__VA_ARGS__, _stopPoint};\
+    int i;\
+    for (i=0; _listForApplyAll[i] != _stopPoint; i++)\
+    {\
+        fn(_listForApplyAll[i]);\
+    }\
+}
+
+#define FREE_ALL(...) FN_APPLY_ALL(void*, my_free, __VA_ARGS__)
+
 #define BUFFER_SIZE  2048
 #define TUN_FILEPATH  "/dev/net/tun"
 #define CAPWAP_HDR_SIZE 30
@@ -41,6 +54,14 @@
 #define TUNNEL_HDR_SIZE (sizeof(struct ethhdr)+\
                         sizeof(struct iphdr)+\
                         sizeof(struct udphdr))
+
+static inline my_free(void* ptr)
+{
+    if (ptr)
+    {
+        free(ptr);
+    }
+}
 
 int tap_setip(char* ifname, char* ipaddr);
 int tap_setmask(char* ifname, char* netmask);

@@ -17,12 +17,14 @@ static void _pringUsage(const char* programName, FILE* stream, int exitCode)
 
     fprintf(stream, "Usage %s options ...\n", programName);
     fprintf(stream,
+            "\n"
             "\t--ip=[x.x.x.x]    : my tap interface ip address\n"
             "\t--mask=[x.x.x.x]  : my tap interface netmask\n"
             "\t--dst=[x.x.x.x]   : tunnel desination real ip address\n"
             "\t--port=[0~65535]  : (optional) tunnel port, default is 50000\n"
             "\t--name=[string]   : (optional) my tap interface name, default is tap01\n"
             "\t--help            : display usage information.\n"
+            "\n"
             );
 
 _END:

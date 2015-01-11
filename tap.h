@@ -22,7 +22,7 @@
 #include <linux/udp.h>
 
 #define dprint(a, b...) printf("%s(): "a"\n", __func__, ##b)
-#define derror(a, b...) dprint("[ERROR]"a, ##b)
+#define derror(a, b...) dprint("[ERROR] "a, ##b)
 
 #define CHECK_IF(assertion, error_action, ...) \
 {\

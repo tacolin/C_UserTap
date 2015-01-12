@@ -1,14 +1,5 @@
 #include "tap.h"
 
-typedef struct {
-
-    int udpfd;
-    int tapfd;
-    unsigned char buffer[BUFFER_SIZE];
-
-} threadData;
-
-
 static int _running = 1;
 
 static void _sigIntHandler(int signo)

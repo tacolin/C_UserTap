@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS =
+CFLAGS = -pthread
 OBJS = main.o tap.o udp.o
 TARGET = usertap
 

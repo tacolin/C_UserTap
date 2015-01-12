@@ -181,13 +181,13 @@ int main(int argc, char* argv[])
     threadData tapdata = {
         .udpfd = udpfd,
         .tapfd = tapfd,
-        .buffer = {},
+        .buffer = {0},
     };
 
     threadData udpdata = {
         .udpfd = udpfd,
         .tapfd = tapfd,
-        .buffer = {},
+        .buffer = {0},
     };
 
     pthread_create(&tapReadThread, NULL, _processTapReadData, (void*)&tapdata);

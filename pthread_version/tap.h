@@ -25,15 +25,6 @@
 #define dprint(a, b...) printf("%s(): "a"\n", __func__, ##b)
 #define derror(a, b...) dprint("[ERROR] "a, ##b)
 
-typedef struct {
-
-    int udpfd;
-    int tapfd;
-    unsigned char buffer[BUFFER_SIZE];
-
-} threadData;
-
-
 #define CHECK_IF(assertion, error_action, ...) \
 {\
     if (assertion) \
@@ -64,6 +55,14 @@ typedef struct {
 #define TUNNEL_HDR_SIZE (sizeof(struct ethhdr)+\
                         sizeof(struct iphdr)+\
                         sizeof(struct udphdr))
+
+typedef struct {
+
+    int udpfd;
+    int tapfd;
+    unsigned char buffer[BUFFER_SIZE];
+
+} threadData;
 
 static inline my_free(void* ptr)
 {

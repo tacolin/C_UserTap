@@ -1,7 +1,22 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Headers
+//
+//////////////////////////////////////////////////////////////////////////////
 #include "tap.h"
 
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Global Variables
+//
+//////////////////////////////////////////////////////////////////////////////
 static int _running = 1;
 
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Static Functions
+//
+//////////////////////////////////////////////////////////////////////////////
 static void _sigIntHandler(int signo)
 {
     if (signo == SIGINT)
@@ -31,6 +46,11 @@ _END:
     exit(exitCode);
 }
 
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Main Function
+//
+//////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
     const char* programName = argv[0];
@@ -39,6 +59,9 @@ int main(int argc, char* argv[])
         _pringUsage(programName, stderr, -1);
     }
 
+    /*
+    *   get necessary parameters from input
+    */
     const struct option longOpt[] = {
         {"ip"  , required_argument, NULL, 1},
         {"mask", required_argument, NULL, 2},
@@ -95,6 +118,9 @@ int main(int argc, char* argv[])
         }
     }
 
+    /*
+    *   check if gotten parameters are valid
+    */
     if (port == -1)
     {
         port = TUNNEL_DEFAULT_PORT;
@@ -105,6 +131,9 @@ int main(int argc, char* argv[])
         asprintf(&ifname, "%s", TAP_IF_DEFAULT_NAME);
     }
 
+    /*
+    *   configure TAP
+    */
     int udpfd = -1;
     int tapfd = -1;
 
@@ -125,6 +154,9 @@ int main(int argc, char* argv[])
 
     signal(SIGINT, _sigIntHandler);
 
+    /*
+    *   configure UDP
+    */
     udpfd = udp_create(dstip, port);
     CHECK_IF(0>udpfd, goto _END, "udp create failed");
 
@@ -136,6 +168,9 @@ int main(int argc, char* argv[])
     int recvLen = 0;
     int sendLen = 0;
 
+    /*
+    *   main process loop
+    */
     while (_running)
     {
         timeout.tv_sec = 1;
@@ -152,13 +187,16 @@ int main(int argc, char* argv[])
         }
         else if (0 == selectRet)
         {
-            // timeout
-            continue;
+            continue; /* timeout */
         }
         else
         {
             if (FD_ISSET(tapfd, &readset))
             {
+                /*
+                *   read data from TAP interface.
+                *   send that data by UDP socket
+                */
                 recvLen = read(tapfd, buffer, BUFFER_SIZE);
                 CHECK_IF(0>recvLen, goto _END,
                          "tapfd read failed, recvLen = %d", recvLen);
@@ -170,6 +208,10 @@ int main(int argc, char* argv[])
 
             if (FD_ISSET(udpfd, &readset))
             {
+                /*
+                *   recv data from UDP socket
+                *   write that data to TAP interface
+                */
                 recvLen = udp_recv(udpfd, buffer, BUFFER_SIZE);
                 CHECK_IF(0>recvLen, goto _END,
                          "udp socket recv failed, recvLen = %d", recvLen);

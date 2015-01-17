@@ -1,7 +1,22 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Headers
+//
+//////////////////////////////////////////////////////////////////////////////
 #include "tap.h"
 
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Global Variables
+//
+//////////////////////////////////////////////////////////////////////////////
 static int _running = 1;
 
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Static Functions
+//
+//////////////////////////////////////////////////////////////////////////////
 static void _sigIntHandler(int signo)
 {
     if (signo == SIGINT)
@@ -31,7 +46,12 @@ _END:
     exit(exitCode);
 }
 
-void* _processTapReadData(void* arg)
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Thread Process Functions
+//
+//////////////////////////////////////////////////////////////////////////////
+static void* _processTapReadData(void* arg)
 {
     CHECK_IF(NULL==arg, goto _END, "arg is null");
 
@@ -40,6 +60,10 @@ void* _processTapReadData(void* arg)
     int recvLen;
     while (1)
     {
+        /*
+        *   read data from TAP interface.
+        *   send that data by UDP socket
+        */
         recvLen = read(data->tapfd, data->buffer, BUFFER_SIZE);
         CHECK_IF(0>recvLen, goto _END,
                  "tapfd read failed, recvLen = %d", recvLen);
@@ -54,7 +78,7 @@ _END:
     return NULL;
 }
 
-void* _processUdpRecvData(void *arg)
+static void* _processUdpRecvData(void *arg)
 {
     CHECK_IF(NULL==arg, goto _END, "arg is null");
 
@@ -64,6 +88,10 @@ void* _processUdpRecvData(void *arg)
 
     while (1)
     {
+        /*
+        *   recv data from UDP socket
+        *   write that data to TAP interface
+        */
         recvLen = udp_recv(data->udpfd, data->buffer, BUFFER_SIZE);
         CHECK_IF(0>recvLen, goto _END,
                  "udp socket recv failed, recvLen = %d", recvLen);
@@ -78,6 +106,11 @@ _END:
     return NULL;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Main Function
+//
+//////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
     const char* programName = argv[0];
@@ -86,6 +119,9 @@ int main(int argc, char* argv[])
         _pringUsage(programName, stderr, -1);
     }
 
+    /*
+    *   get necessary parameters from input
+    */
     const struct option longOpt[] = {
         {"ip"  , required_argument, NULL, 1},
         {"mask", required_argument, NULL, 2},
@@ -142,6 +178,9 @@ int main(int argc, char* argv[])
         }
     }
 
+    /*
+    *   check if gotten parameters are valid
+    */
     if (port == -1)
     {
         port = TUNNEL_DEFAULT_PORT;
@@ -152,6 +191,9 @@ int main(int argc, char* argv[])
         asprintf(&ifname, "%s", TAP_IF_DEFAULT_NAME);
     }
 
+    /*
+    *   configure TAP
+    */
     int udpfd = -1;
     int tapfd = -1;
 
@@ -172,9 +214,15 @@ int main(int argc, char* argv[])
 
     signal(SIGINT, _sigIntHandler);
 
+    /*
+    *   configure UDP
+    */
     udpfd = udp_create(dstip, port);
     CHECK_IF(0>udpfd, goto _END, "udp create failed");
 
+    /*
+    *   configure pthread
+    */
     pthread_t tapReadThread;
     pthread_t udpReadThread;
 
@@ -190,9 +238,15 @@ int main(int argc, char* argv[])
         .buffer = {0},
     };
 
+    /*
+    *   create and start threads
+    */
     pthread_create(&tapReadThread, NULL, _processTapReadData, (void*)&tapdata);
     pthread_create(&udpReadThread, NULL, _processUdpRecvData, (void*)&udpdata);
 
+    /*
+    *   main process loop - let the process continue without ending
+    */
     while (_running)
     {
         sleep(1);

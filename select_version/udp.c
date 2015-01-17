@@ -1,7 +1,22 @@
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Headers
+//
+//////////////////////////////////////////////////////////////////////////////
 #include "tap.h"
 
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Global Variables
+//
+//////////////////////////////////////////////////////////////////////////////
 static struct sockaddr_in _sendaddr = {};
 
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Functions
+//
+//////////////////////////////////////////////////////////////////////////////
 int udp_recv(int udpfd, void* buffer, int bufferSize)
 {
     return recv(udpfd, buffer, bufferSize, 0);
@@ -23,12 +38,13 @@ int udp_create(char* dstip, int port)
     CHECK_IF(0>udpfd, goto _ERROR, "udp socket create failed");
 
     struct sockaddr_in recvaddr = {};
-    recvaddr.sin_family = AF_INET;
+
+    recvaddr.sin_family      = AF_INET;
     recvaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    recvaddr.sin_port = htons(port);
+    recvaddr.sin_port        = htons(port);
 
     int flag = 1;
-    int ret = setsockopt(udpfd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(int));
+    int ret  = setsockopt(udpfd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(int));
     CHECK_IF(0>ret, goto _ERROR, "udp socket setsockopt failed");
 
     ret = bind(udpfd, (struct sockaddr *)&recvaddr, sizeof(struct sockaddr_in));

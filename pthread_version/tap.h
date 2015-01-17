@@ -1,11 +1,14 @@
 #ifndef _TAP_H_
 #define _TAP_H_
 
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Headers
+//
+//////////////////////////////////////////////////////////////////////////////
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
-
-#include <sys/select.h>
 
 #include <signal.h>
 #include <net/if.h>         // struct ifreq
@@ -22,7 +25,13 @@
 #include <linux/udp.h>
 #include <pthread.h>
 
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Macros
+//
+//////////////////////////////////////////////////////////////////////////////
 #define dprint(a, b...) printf("%s(): "a"\n", __func__, ##b)
+
 #define derror(a, b...) dprint("[ERROR] "a, ##b)
 
 #define CHECK_IF(assertion, error_action, ...) \
@@ -47,15 +56,23 @@
 
 #define FREE_ALL(...) FN_APPLY_ALL(void*, my_free, __VA_ARGS__)
 
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Define Values
+//
+//////////////////////////////////////////////////////////////////////////////
 #define BUFFER_SIZE  2048
 #define TUN_FILEPATH  "/dev/net/tun"
-#define CAPWAP_HDR_SIZE 30
 #define TAP_IF_DEFAULT_NAME "tap01"
 #define TUNNEL_DEFAULT_PORT 50000
-#define TUNNEL_HDR_SIZE (sizeof(struct ethhdr)+\
-                        sizeof(struct iphdr)+\
-                        sizeof(struct udphdr))
+/* 60 bytes is max size of ip header */
+#define TUNNEL_HDR_SIZE (sizeof(struct ethhdr)+60+sizeof(struct udphdr))
 
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Type Definitions
+//
+//////////////////////////////////////////////////////////////////////////////
 typedef struct {
 
     int udpfd;
@@ -64,14 +81,21 @@ typedef struct {
 
 } threadData;
 
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Inline Functions
+//
+//////////////////////////////////////////////////////////////////////////////
 static inline my_free(void* ptr)
 {
-    if (ptr)
-    {
-        free(ptr);
-    }
+    if (ptr) { free(ptr); }
 }
 
+//////////////////////////////////////////////////////////////////////////////
+//
+//      Function Declarations
+//
+//////////////////////////////////////////////////////////////////////////////
 int tap_setip(char* ifname, char* ipaddr);
 int tap_setmask(char* ifname, char* netmask);
 int tap_enable(char* ifname);

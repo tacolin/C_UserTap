@@ -20,23 +20,23 @@ How to Test?
 
 1. Create the TAP virutal network device in COMPUTER A and B
 
-> In COMPUTER A:
+  > In COMPUTER A:
 
-    $ sudo ./userapp --ip=10.10.10.1 --mask=255.255.255.0 --dst=192.168.1.2
+    > $ sudo ./userapp --ip=10.10.10.1 --mask=255.255.255.0 --dst=192.168.1.2
 
-> In COMPUTER B:
+  > In COMPUTER B:
 
-    $ sudo ./userapp --ip=10.10.10.2 --mask=255.255.255.0 --dst=192.168.1.1
+    > $ sudo ./userapp --ip=10.10.10.2 --mask=255.255.255.0 --dst=192.168.1.1
 
 2. Ping by TAP Tunnel (open another console)
 
-> In COMPUTER A:
+  > In COMPUTER A:
 
-    $ ping 10.10.10.2
+    > $ ping 10.10.10.2
 
-> In COMPUTER B:
+  > In COMPUTER B:
 
-    $ ping 10.10.10.1
+    > $ ping 10.10.10.1
 
 
 References

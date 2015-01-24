@@ -252,6 +252,12 @@ int main(int argc, char* argv[])
         sleep(1);
     }
 
+    /*
+    *   stop threads
+    */
+    pthread_cancel(tapReadThread);
+    pthread_cancel(udpReadThread);
+
 _END:
     if (udpfd > 0)
     {

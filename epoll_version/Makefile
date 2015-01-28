@@ -1,5 +1,6 @@
 program_NAME        := epoll_usertap
 program_INSTALL_DIR :=
+program_SRC_DIR     := ./
 program_OBJ_DIR     := objs
 
 ###############################################################################
@@ -10,7 +11,7 @@ program_CFLAGS       := -pthread -g
 
 ###############################################################################
 program_TARGET := ./$(program_INSTALL_DIR)/$(program_NAME)
-program_SRCS   := $(wildcard *.c)
+program_SRCS   += $(foreach srcdir, $(program_SRC_DIR), $(wildcard $(srcdir)/*.c))
 program_OBJS   := $(addprefix $(program_OBJ_DIR)/, $(program_SRCS:.c=.o))
 program_DEPS   := $(program_OBJS:.o=.d)
 

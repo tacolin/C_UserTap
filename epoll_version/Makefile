@@ -32,7 +32,7 @@ all: $(program_TARGET)
 $(program_TARGET): $(program_OBJS)
 	@test -d $(program_INSTALL_DIR) || mkdir -p $(program_INSTALL_DIR)
 	@$(CC) $(CFLAGS) $(program_OBJS) -o $(program_TARGET) $(LDFLAGS)
-	@echo "\033[1;33m[MAKE] Project is built successfully\033[0m"
+	@echo "\033[1;33m[MAKE] $(program_NAME) is built successfully\033[0m"
 
 $(program_OBJS): $(program_OBJ_DIR)/%.o : %.c
 	@test -d $(program_OBJ_DIR) || mkdir -p $(program_OBJ_DIR)

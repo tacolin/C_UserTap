@@ -30,9 +30,9 @@
 //      Macros
 //
 //////////////////////////////////////////////////////////////////////////////
-#define dprint(a, b...) printf("%s(): "a"\n", __func__, ##b)
+#define dprint(a, b...) fprintf(stdout, "%s(): "a"\n", __func__, ##b)
 
-#define derror(a, b...) dprint("[ERROR] "a, ##b)
+#define derror(a, b...) fprintf(stderr, "[ERROR] %s(): "a"\n", __func__, ##b)
 
 #define CHECK_IF(assertion, error_action, ...) \
 {\
